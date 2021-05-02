@@ -111,7 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/New_York'
 
 USE_I18N = True
 
@@ -129,3 +129,9 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Rest Framework Config
+REST_FRAMEWORK = {
+    'DATETIME_FORMAT': "%m-%d-%Y %H:%M:%S",
+    'DATETIME_INPUT_FORMAT': ["%m-%d-%Y %H:%M:%S"]
+}
