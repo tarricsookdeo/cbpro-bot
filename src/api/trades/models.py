@@ -2,6 +2,7 @@ from django.db import models
 
 
 class Trade(models.Model):
+    coinbase_trade_id = models.CharField(max_length=36, null=True, blank=True)
     ticker = models.CharField(max_length=8)
     shares = models.DecimalField(max_digits=14, decimal_places=8)
     entry_price = models.DecimalField(max_digits=13, decimal_places=6)
