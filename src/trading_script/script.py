@@ -1,12 +1,13 @@
 import time
+from datetime import datetime
 
 import cbpro
 import pandas as pd
 import requests
 import ta
-from datetime import datetime
 
 import config
+import helpers
 
 client = cbpro.AuthenticatedClient(
     config.cbpro_public_key, config.cbpro_secret_key, config.cbpro_key_passphrase)
@@ -59,16 +60,8 @@ while True:
             if config.paper_trade:
                 price = client.get_product_ticker('BTC-USD')
                 fee = (price.bid * 0.01) * (config.taker_fee_percent / 100)
-                now = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
-                trade = {'ticker': 'BTC-USD', 'shares': 0.01, 'entry_price': price.bid,
-                         'entry_datetime': now, 'filled': True, 'entry_fee': fee}
-
-                r = requests.post(
-                    'http://127.0.0.1:8000/api/v1/trades/', data=trade)
-
-                if r.status_code == 200:
-                    print(
-                        f'Paper Trade Placed: ticker: BTC-USD, shares: 0.01, entry_price: {price.bid}, entry_datetime: {now}, filled: True, entry_fee: {fee}')
+                trade_logged = helpers.log_buy_order(price, True, fee)
+                if trade_logged:
                     take_profit = price.bid + fee + (price.bid * 0.02)
                     stop_loss = (price.bid * 0.99) - fee
                     active_trade = True
