@@ -5,25 +5,18 @@ import requests
 import config
 
 
-def log_buy_order(price, filled, fee, cb_trade_id=None):
+def log_buy_order_paper_trade(price):
     ''' Logs a new buy order to the API used to keep track of the trades.
 
         Arguments:
 
         price (decimal) - The price of the asset when bought. Precise to 6 
-                          decimal places.
-
-        filled (bool) - True if the order has been filled, false otherwise.
-
-        fee (decimal) - The fee paid for the order. Precise to 6 decimal 
-                        places.
-
-        cb_trade_id (string) - The ID Coinbase assigns the trade when it is
-                               placed. Note that this defaults to None. If
-                               the trade is a paper trade, there will be no
-                               assigned trade ID from Coinbase.
+        decimal places.
 
         Returns:
+
+        Prints a message on success or failure as well as returns a boolean
+        value.
 
         A boolean value:
         True - if the trade was successfully logged.
@@ -33,23 +26,54 @@ def log_buy_order(price, filled, fee, cb_trade_id=None):
     # Creates a timestanp for the current datetime.
     # the format is specifc to the API that will log the trade.
     now = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
+    fee = (price * config.shares) * (config.taker_fee_percent / 100)
 
     # Constructs a trade object using different data sources
     # such as the config file, and arguments to the method.
-    trade = {'ticker': config.trading_pair,
+    trade = {'ticker': config.ticker,
              'shares': config.shares, 'entry_price': price,
-             'entry_datetime': now, 'filled': filled, 'entry_fee': fee}
-
-    # If there is a Coinbase trade ID, add it to the trade dictionary.
-    if cb_trade_id:
-        trade['coinbase_trade_id'] = cb_trade_id
+             'entry_datetime': now, 'filled': True, 'entry_fee': fee}
 
     # Construct the url endpoint for the API request.
     url = f'{config.base_url}/trades/'
 
-    # Makes the post request using the requests library.
-    r = requests.post(url, data=trade)
+    try:
+        # Makes the post request using the requests library.
+        r = requests.post(url, data=trade)
 
-    if r.status_code == 200:
-        return True
-    return False
+        if r.ok:
+            print(f'Placed buy order for {config.ticker} @ {price}')
+            return True
+    except:
+        print('An error occured when logging the trade')
+        return False
+
+
+def get_market_data(cbpro_client, candle_timeframe):
+    ''' Gets the OHLC candlesticks for a specified timeframe and
+        returns a pandas dataframe of this data with the timestamp
+        as the index.
+
+        Arguments:
+
+        cbpro_client (object) - A client object setup using the cbpro package.
+        This should be an authenticated client setup by using cbpro.AuthenticatedClient. 
+        Note that to setup an authenticated client, a public key, secret key, and 
+        passphrase are needed. See cbpro documention for more details.
+
+        cande_timeframe (int) - Represents the candlestick timeframe in seconds. For
+        example, the 1 minute candle would be 60. Note that this value must be one that
+        is supported by Coinbase Pro. The following are supported values: 60, 300, 900,
+        3600, 21600, 86400.
+
+        Returns:
+
+        A pandas dataframe with columns of [Time, Low, High, Open, Close, Volume].
+        Each row in the dataframe represents a single candle of it's timeframe. Note
+        that the Time column will be the index in the returned dataframe. Each dataframe
+        will have 300 rows by default.
+
+        Example of a returned dataframe:
+
+    '''
+    pass

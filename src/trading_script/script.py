@@ -56,14 +56,12 @@ while True:
         df['MACD'] = macd_values.macd()
 
         if df.iloc[-1]['MACD'] > 0 and df.iloc[-2]['MACD'] < 0 and df.iloc[-3]['MACD'] < 0:
-            price = client.get_product_ticker('BTC-USD')
             if config.paper_trade:
                 price = client.get_product_ticker('BTC-USD')
-                fee = (price.bid * 0.01) * (config.taker_fee_percent / 100)
-                trade_logged = helpers.log_buy_order(price, True, fee)
+                trade_logged = helpers.log_buy_order(price.bid)
                 if trade_logged:
-                    take_profit = price.bid + fee + (price.bid * 0.02)
-                    stop_loss = (price.bid * 0.99) - fee
+                    take_profit = price.bid + (price.bid * 0.02)
+                    stop_loss = (price.bid * 0.99)
                     active_trade = True
             else:
                 pass
