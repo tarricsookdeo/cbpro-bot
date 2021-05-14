@@ -45,12 +45,7 @@ while True:
         time.sleep(1)
     while not active_trade:
         print('Looking for buy signal...')
-        candles = client.get_product_historic_rates(
-            product_id='BTC-USD', granularity=60)
-        candles = candles[::-1]
-        df = pd.DataFrame(candles, columns=[
-            'Time', 'Low', 'High', 'Open', 'Close', 'Volume'])
-        df.set_index('Time', inplace=True)
+        df = config.get_market_data(client, 60)
 
         macd_values = ta.trend.MACD(df['Close'])
         df['MACD'] = macd_values.macd()

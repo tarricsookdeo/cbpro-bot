@@ -81,6 +81,20 @@ def get_market_data(cbpro_client, candle_timeframe):
 
         Example of a returned dataframe:
 
+                         Low      High      Open     Close     Volume
+        Time                                                         
+        1620986520  50473.34  50520.08  50499.89  50475.78   1.945625
+        1620986580  50444.89  50491.88  50475.77  50449.63   6.775999
+        1620986640  50396.96  50449.62  50449.62  50396.96   2.913923
+        1620986700  50396.95  50427.67  50397.57  50417.50   3.555249
+        1620986760  50417.48  50443.77  50417.50  50443.77   4.348404
+        ...              ...       ...       ...       ...        ...
+        1621004220  50851.52  50987.90  50851.52  50943.23  43.637102
+        1621004280  50920.71  50984.30  50943.23  50984.30  21.196479
+        1621004340  50937.72  50996.85  50984.30  50956.54  26.671939
+        1621004400  50954.71  50988.00  50956.55  50983.13  19.064374
+        1621004460  50983.12  51170.00  50983.13  51169.98  55.817577
+
     '''
 
     # Get candle data from Coinbase API
@@ -88,19 +102,18 @@ def get_market_data(cbpro_client, candle_timeframe):
         product_id=config.ticker, granularity=candle_timeframe)
 
     # Reverse the order of the candles so it can be proccessed by
-    # the ta library better
+    # the ta library better. The new order will be in ascending order.
     candles = candles[::-1]
 
+    # Converts the list of candle data to a pandas df, with their
+    # respective column names
     df = pd.DataFrame(candles, columns=[
         'Time', 'Low', 'High', 'Open', 'Close', 'Volume'])
 
+    # Set the timestamp column as the index
     df.set_index('Time', inplace=True)
 
     return df
-
-
-data = get_market_data(client, 60)
-print(data)
 
 
 def calculate_fee(price):
