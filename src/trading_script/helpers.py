@@ -1,8 +1,14 @@
 from datetime import datetime
 
+import cbpro
+import pandas as pd
 import requests
+import ta
 
 import config
+
+client = cbpro.AuthenticatedClient(
+    config.cbpro_public_key, config.cbpro_secret_key, config.cbpro_key_passphrase)
 
 
 def log_buy_order_paper_trade(price):
@@ -76,4 +82,36 @@ def get_market_data(cbpro_client, candle_timeframe):
         Example of a returned dataframe:
 
     '''
-    pass
+
+    # Get candle data from Coinbase API
+    candles = cbpro_client.get_product_historic_rates(
+        product_id=config.ticker, granularity=candle_timeframe)
+
+    # Reverse the order of the candles so it can be proccessed by
+    # the ta library better
+    candles = candles[::-1]
+
+    df = pd.DataFrame(candles, columns=[
+        'Time', 'Low', 'High', 'Open', 'Close', 'Volume'])
+
+    df.set_index('Time', inplace=True)
+
+    return df
+
+
+data = get_market_data(client, 60)
+print(data)
+
+
+def calculate_fee(price):
+    ''' Calculates the fee for the trade based on the price, shares, and fee percent.
+
+        Arguments:
+
+        price (decimal) - the price that the order was placed at.
+
+        Returns:
+
+        A decimal value of the calculated fee.
+    '''
+    return (price * config.shares) * (config.fee_percent / 100)

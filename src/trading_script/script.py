@@ -58,7 +58,7 @@ while True:
         if df.iloc[-1]['MACD'] > 0 and df.iloc[-2]['MACD'] < 0 and df.iloc[-3]['MACD'] < 0:
             if config.paper_trade:
                 price = client.get_product_ticker('BTC-USD')
-                trade_logged = helpers.log_buy_order(price.bid)
+                trade_logged = helpers.log_buy_order_paper_trade(price.bid)
                 if trade_logged:
                     take_profit = price.bid + (price.bid * 0.02)
                     stop_loss = (price.bid * 0.99)
