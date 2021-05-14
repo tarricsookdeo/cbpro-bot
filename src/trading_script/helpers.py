@@ -1,14 +1,10 @@
 from datetime import datetime
 
-import cbpro
 import pandas as pd
 import requests
 import ta
 
 import config
-
-client = cbpro.AuthenticatedClient(
-    config.cbpro_public_key, config.cbpro_secret_key, config.cbpro_key_passphrase)
 
 
 def log_buy_order_paper_trade(price):
@@ -128,3 +124,43 @@ def calculate_fee(price):
         A decimal value of the calculated fee.
     '''
     return (price * config.shares) * (config.fee_percent / 100)
+
+
+def calculate_technical_indicators(df):
+    ''' Calculates technical indicators using the ta package, and adds them
+        to their respected candles in the dataframe.
+
+        Arguments:
+
+        df (pandas dataframe) - the dataframe with the candle data. From this data,
+        the technical indicators will be calculated.
+
+        Returns:
+
+        A pandas dataframe with the original OHLCV candle data, along with their associated
+        techincal indicators added as a new column.
+    '''
+    macd_values = ta.trend.MACD(df['Close'])
+    df['MACD'] = macd_values.macd()
+
+    return df
+
+
+def buy_signal(df):
+    ''' Returns a boolean value if a buy signal was found. Used a pandas dataframe
+        to calculate the buy signal based on technical or other indicators.
+
+        Arguments:
+
+        df (pandas dataframe) - the dataframe with OHLCV candle data, alongside any
+        calculated technical indicators.
+
+        Returns:
+
+        A boolean value based on if a buy signal was found:
+        True - A buy signal was found
+        False -  No buy signal was found
+    '''
+    if df.iloc[-1]['MACD'] > 0 and df.iloc[-2]['MACD'] < 0 and df.iloc[-3]['MACD'] < 0:
+        return True
+    return False

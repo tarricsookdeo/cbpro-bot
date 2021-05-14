@@ -40,17 +40,13 @@ while True:
                     active_trade = False
                     take_profit = None
                     stop_loss = None
-            else:
-                pass
         time.sleep(1)
     while not active_trade:
         print('Looking for buy signal...')
-        df = config.get_market_data(client, 60)
+        df = helpers.get_market_data(client, 60)
+        df = helpers.calculate_technical_indicators(df)
 
-        macd_values = ta.trend.MACD(df['Close'])
-        df['MACD'] = macd_values.macd()
-
-        if df.iloc[-1]['MACD'] > 0 and df.iloc[-2]['MACD'] < 0 and df.iloc[-3]['MACD'] < 0:
+        if helpers.buy_signal(df):
             if config.paper_trade:
                 price = client.get_product_ticker('BTC-USD')
                 trade_logged = helpers.log_buy_order_paper_trade(price.bid)
@@ -58,6 +54,4 @@ while True:
                     take_profit = price.bid + (price.bid * 0.02)
                     stop_loss = (price.bid * 0.99)
                     active_trade = True
-            else:
-                pass
         time.sleep(60)
