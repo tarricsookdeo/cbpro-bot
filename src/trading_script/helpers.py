@@ -141,7 +141,7 @@ def calculate_technical_indicators(df):
         techincal indicators added as a new column.
     '''
     macd_values = ta.trend.MACD(df['Close'])
-    df['MACD'] = macd_values.macd()
+    df['MACD_DIFF'] = macd_values.macd_diff()
 
     return df
 
@@ -161,6 +161,6 @@ def buy_signal(df):
         True - A buy signal was found
         False -  No buy signal was found
     '''
-    if df.iloc[-1]['MACD'] > 0 and df.iloc[-2]['MACD'] < 0 and df.iloc[-3]['MACD'] < 0:
+    if df.iloc[-1]['MACD_DIFF'] > 0 and df.iloc[-2]['MACD_DIFF'] < 0 and df.iloc[-3]['MACD_DIFF'] < 0:
         return True
     return False
