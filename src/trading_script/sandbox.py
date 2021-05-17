@@ -1,4 +1,7 @@
 # Used for testing. Will not be in final product.
+from datetime import date, datetime
+import time
+
 import cbpro
 import ta
 
@@ -8,5 +11,5 @@ import helpers
 client = cbpro.AuthenticatedClient(
     config.cbpro_public_key, config.cbpro_secret_key, config.cbpro_key_passphrase)
 
-print(helpers.get_price(client, 'BTC-USD', 'BUY'))
-print(helpers.get_price(client, 'BTC-USD', 'SELL'))
+candles = helpers.get_market_data(client, 60)
+print(candles)

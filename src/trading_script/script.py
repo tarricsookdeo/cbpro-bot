@@ -42,16 +42,16 @@ while True:
                     stop_loss = None
         time.sleep(1)
     while not active_trade:
-        print('Looking for buy signal...')
         df = helpers.get_market_data(client, 60)
         df = helpers.calculate_technical_indicators(df)
+        helpers.print_buy_message(df)
 
         if helpers.buy_signal(df):
             if config.paper_trade:
                 price = helpers.get_price(client, 'BUY')
-                trade_logged = helpers.log_buy_order_paper_trade(price.bid)
+                trade_logged = helpers.log_buy_order_paper_trade(price)
                 if trade_logged:
-                    take_profit = price.bid + (price.bid * 0.02)
-                    stop_loss = (price.bid * 0.99)
+                    take_profit = price + (price * 0.02)
+                    stop_loss = (price * 0.99)
                     active_trade = True
         time.sleep(60)
