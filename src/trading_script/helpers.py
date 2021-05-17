@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 
 import pandas as pd
 import requests
@@ -164,3 +165,30 @@ def buy_signal(df):
     if df.iloc[-1]['MACD_DIFF'] > 0 and df.iloc[-2]['MACD_DIFF'] < 0 and df.iloc[-3]['MACD_DIFF'] < 0:
         return True
     return False
+
+
+def get_price(cbpro_client, ticker, side):
+    ''' Gets the current bid or ask price of the specified ticker.
+
+        Arguments:
+
+        cbpro_client (object) - A client object setup using the cbpro package.
+        This should be an authenticated client setup by using cbpro.AuthenticatedClient. 
+        Note that to setup an authenticated client, a public key, secret key, and 
+        passphrase are needed. See cbpro documention for more details.
+
+        side (string) - This should be either 'BUY' or 'SELL'. If 'BUY' the bid will be
+        returned and if 'SELL'the ask will be returned.
+
+        Returns:
+
+        Decimal - A decimal value of the bid or ask.
+    '''
+    ticker = cbpro_client.get_product_ticker(config.ticker)
+
+    if side == 'BUY':
+        price = ticker['bid']
+    elif side == 'SELL':
+        price = ticker['ask']
+
+    return Decimal(price)

@@ -48,7 +48,7 @@ while True:
 
         if helpers.buy_signal(df):
             if config.paper_trade:
-                price = client.get_product_ticker('BTC-USD')
+                price = helpers.get_price(client, 'BUY')
                 trade_logged = helpers.log_buy_order_paper_trade(price.bid)
                 if trade_logged:
                     take_profit = price.bid + (price.bid * 0.02)
