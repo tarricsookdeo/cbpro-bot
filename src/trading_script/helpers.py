@@ -69,16 +69,22 @@ def log_sell_order_paper_trade(price):
         True - if the trade was successfully logged.
         False - if there was an error while logging the trade.
     '''
+    # Creates a timestanp for the current datetime.
+    # the format is specifc to the API that will log the trade.
     now = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
 
+    # Get's a list of trades, and stores the last one in the array.
     r = requests.get('http://127.0.0.1:8000/api/v1/trades/')
     last_trade_id = r.json()[-1]['id']
 
+    # Calculate trade fee in dollars
     fee = (price * config.shares) * (config.fee_percent / 100)
 
+    # Construct the trade object
     trade = {'exit_price': price,
              'exit_datetime': now, 'exit_fee': fee}
 
+    # Contruct the URL for the last trade that was placed
     url = f'http://127.0.0.1:8000/api/v1/trades/{last_trade_id}/'
 
     r = requests.patch(url, data=trade)
