@@ -20,23 +20,11 @@ while True:
     while active_trade:
         print(
             f'Looking for sell signal: take profit: {take_profit} - stop loss: {stop_loss}')
-        price = client.get_product_ticker('BTC-USD')
-        if price.ask >= take_profit or price.ask <= stop_loss:
+        price = helpers.get_price(client, config.ticker, 'SELL')
+        if price >= take_profit or price <= stop_loss:
             if config.paper_trade:
-                price = price.ask
-                now = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
-                r = requests.get('http://127.0.0.1:8000/api/v1/trades/')
-                last_trade_id = r.json()[-1]['id']
-                last_trade_shares = r.json[-1]['shares']
-                fee = (price * last_trade_shares) * \
-                    (config.taker_fee_percent / 100)
-                trade = {'exit_price': price,
-                         'exit_datetime': now, 'exit_fee': fee}
-                url = f'http://127.0.0.1:8000/api/v1/trades/{last_trade_id}/'
-                r = requests.patch(url, data=trade)
-                if r.status_code == 200:
-                    print(
-                        f'Paper Trade Placed: ticker: BTC-USD, shares: 0.01, exit_price: {price}, exit_datetime: {now}, exit_fee: {fee}')
+                trade_logged = helpers.log_sell_order_paper_trade(price)
+                if trade_logged:
                     active_trade = False
                     take_profit = None
                     stop_loss = None

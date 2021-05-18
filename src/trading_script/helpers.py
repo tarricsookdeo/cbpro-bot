@@ -29,7 +29,7 @@ def log_buy_order_paper_trade(price):
     # Creates a timestanp for the current datetime.
     # the format is specifc to the API that will log the trade.
     now = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
-    fee = (price * config.shares) * (config.taker_fee_percent / 100)
+    fee = (price * config.shares) * (config.fee_percent / 100)
 
     # Constructs a trade object using different data sources
     # such as the config file, and arguments to the method.
@@ -48,7 +48,50 @@ def log_buy_order_paper_trade(price):
             print(f'Placed buy order for {config.ticker} @ {price}')
             return True
     except:
-        print('An error occured when logging the trade')
+        print('An error occured when logging the buy trade')
+        return False
+
+
+def log_sell_order_paper_trade(price):
+    ''' Logs a sell order to the API used to keep track of the trades.
+
+        Arguments:
+
+        price (decimal) - The price of the asset when sold. Precise to 6 
+        decimal places.
+
+        Returns:
+
+        Prints a message on success or failure as well as returns a boolean
+        value.
+
+        A boolean value:
+        True - if the trade was successfully logged.
+        False - if there was an error while logging the trade.
+    '''
+    now = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
+
+    r = requests.get('http://127.0.0.1:8000/api/v1/trades/')
+    last_trade_id = r.json()[-1]['id']
+
+    fee = (price * config.shares) * (config.fee_percent / 100)
+
+    trade = {'exit_price': price,
+             'exit_datetime': now, 'exit_fee': fee}
+
+    url = f'http://127.0.0.1:8000/api/v1/trades/{last_trade_id}/'
+
+    r = requests.patch(url, data=trade)
+
+    try:
+        r = requests.patch(url, data=trade)
+
+        if r.ok:
+            print(
+                f'Paper Trade Placed: ticker: BTC-USD, shares: 0.01, exit_price: {price}, exit_datetime: {now}, exit_fee: {fee}')
+            return True
+    except:
+        print('An error occured when logging the sell trade')
         return False
 
 
