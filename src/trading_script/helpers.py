@@ -6,7 +6,6 @@ import requests
 import ta
 
 import config
-import script
 
 
 def log_buy_order_paper_trade(price):
@@ -249,7 +248,8 @@ def get_price(cbpro_client, ticker, side):
 def print_buy_message(df):
     '''Prints a message when looking for buy order.'''
     print(
-        f'''--------------------------------------------------
+        f'''
+--------------------------------------------------
     Looking for buy signal... 
     Current Datetime:   {datetime.now().strftime('%m-%d-%Y %H:%M:%S')}
     Current MADC Diff: -1 - {df.iloc[-1]['MACD_DIFF']}
@@ -259,7 +259,7 @@ def print_buy_message(df):
     ''')
 
 
-def sell_signal(price):
+def sell_signal(price, take_profit, stop_loss):
     ''' Checks to see if there is a sell signal and returns a bool value.
 
         Returns:
@@ -267,6 +267,16 @@ def sell_signal(price):
         True - Sell signal found
         False - No sell signal found
     '''
-    if price >= script.take_profit or price <= script.stop_loss:
+    if price >= take_profit or price <= stop_loss:
         return True
     return False
+
+
+def print_sell_message(price, take_profit, stop_loss):
+    '''Prints a message when looking for a sell order.'''
+    print(
+        f'''
+        -----------------------------------------------------------------------
+        Looking for sell signal: take profit: {take_profit} - stop loss: {stop_loss} - price: {price}
+        -----------------------------------------------------------------------
+        ''')
