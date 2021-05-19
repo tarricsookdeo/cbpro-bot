@@ -6,6 +6,7 @@ import requests
 import ta
 
 import config
+import script
 
 
 def log_buy_order_paper_trade(price):
@@ -256,3 +257,16 @@ def print_buy_message(df):
                        -3 - {df.iloc[-1]['MACD_DIFF']}
 ---------------------------------------------------
     ''')
+
+
+def sell_signal(price):
+    ''' Checks to see if there is a sell signal and returns a bool value.
+
+        Returns:
+
+        True - Sell signal found
+        False - No sell signal found
+    '''
+    if price >= script.take_profit or price <= script.stop_loss:
+        return True
+    return False

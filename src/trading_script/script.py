@@ -1,10 +1,6 @@
 import time
-from datetime import datetime
 
 import cbpro
-import pandas as pd
-import requests
-import ta
 
 import config
 import helpers
@@ -21,7 +17,7 @@ while True:
         print(
             f'Looking for sell signal: take profit: {take_profit} - stop loss: {stop_loss}')
         price = helpers.get_price(client, config.ticker, 'SELL')
-        if price >= take_profit or price <= stop_loss:
+        if helpers.sell_signal(price):
             if config.paper_trade:
                 trade_logged = helpers.log_sell_order_paper_trade(price)
                 if trade_logged:
