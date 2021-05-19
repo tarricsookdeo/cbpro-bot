@@ -29,7 +29,8 @@ def log_buy_order_paper_trade(price):
     # Creates a timestanp for the current datetime.
     # the format is specifc to the API that will log the trade.
     now = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
-    fee = (price * config.shares) * (config.fee_percent / 100)
+    fee = (price * Decimal(config.shares)) * \
+        Decimal((config.fee_percent / 100))
 
     # Constructs a trade object using different data sources
     # such as the config file, and arguments to the method.
@@ -78,7 +79,8 @@ def log_sell_order_paper_trade(price):
     last_trade_id = r.json()[-1]['id']
 
     # Calculate trade fee in dollars
-    fee = (price * config.shares) * (config.fee_percent / 100)
+    fee = fee = (price * Decimal(config.shares)) * \
+        Decimal((config.fee_percent / 100))
 
     # Construct the trade object
     trade = {'exit_price': price,
@@ -253,8 +255,8 @@ def print_buy_message(df):
     Looking for buy signal... 
     Current Datetime:   {datetime.now().strftime('%m-%d-%Y %H:%M:%S')}
     Current MADC Diff: -1 - {df.iloc[-1]['MACD_DIFF']}
-                       -2 - {df.iloc[-1]['MACD_DIFF']}
-                       -3 - {df.iloc[-1]['MACD_DIFF']}
+                       -2 - {df.iloc[-2]['MACD_DIFF']}
+                       -3 - {df.iloc[-3]['MACD_DIFF']}
 ---------------------------------------------------
     ''')
 

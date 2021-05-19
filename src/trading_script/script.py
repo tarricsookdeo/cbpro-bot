@@ -31,7 +31,7 @@ while True:
 
         if helpers.buy_signal(df):
             if config.paper_trade:
-                price = helpers.get_price(client, 'BUY')
+                price = helpers.get_price(client, config.ticker, 'BUY')
                 trade_logged = helpers.log_buy_order_paper_trade(price)
                 if trade_logged:
                     take_profit = price + (price * 0.02)
