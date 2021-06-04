@@ -30,6 +30,20 @@ Inside of `config.py` place the following variables:
 
 ## Running the bot:
 
+The bot uses a django API to log trades, and a trading script that runs on a loop to execute trades. Note that the django API and the script have to be running at the same time.
+
+To run the django API:
+
+1. `cd` into the `src/api` folder.
+2. Run `python manage.py migrate`
+3. Run `python manage.py createsuperuser` and follow the instructions to make an admin user.
+4. Run `python manage.py runserver` to start the server.
+
+To run the trading script:
+
+1. `cd` into `src/trading_script`.
+2. Run `python script.py`.
+
 ## How to change trading strategy:
 
 The bot ships with a MACD crossover strategy by default. To change the strategy used a few methods inside of `src/trading_script/helpers` needs to be changes.
