@@ -28,6 +28,8 @@ Inside of `config.py` place the following variables:
 - base_url (string) - The URL for the Django API to record trades. This will usually be 'http://127.0.0.1:8000/api/v1'.
 - paper_trade (bool) - True if bot should trade in paper trades, False to place real trades.
 
+## Running the bot:
+
 ## How to change trading strategy:
 
 The bot ships with a MACD crossover strategy by default. To change the strategy used a few methods inside of `src/trading_script/helpers` needs to be changes.
@@ -39,3 +41,7 @@ If you want to use any new technical indicators such as the RSI, you will need t
 ### buy_signal and sell_signal:
 
 These 2 methods return a boolean value when their respecitive signals are hit. You can change what indicators are used here so long as they exist in the dataframe.
+
+## How to view logged trades:
+
+The bot uses a Django API to log trades. You can view these trades by logging into the Django admin page.
